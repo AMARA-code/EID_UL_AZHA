@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /*
+    Light pastel "luxury Islamic editorial" palette.
+    Stored as RGB triplets so Tailwind can apply alpha via rgb(var(--x) / <alpha>).
+  */
+  --forest: 247 241 246; /* airy blush-cream background */
+  --gold: 214 178 166; /* dusty rose-gold */
+  --terra: 215 154 168; /* soft blush accent */
+  --parchment: 255 250 243; /* warm cream text/cards */
+  --dark: 26 20 34; /* deep ink for contrast */
+
+  --blush: 250 232 241;
+  --lavender: 236 232 251;
+  --cream: 255 250 243;
+  --rosegold: 214 178 166;
+  --ink: 26 20 34;
+
+  --radius-card: 18px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: rgb(var(--ink));
+  background:
+    radial-gradient(900px 500px at 15% 20%, rgba(236, 232, 251, 0.95), rgba(247, 241, 246, 0.65) 60%, rgba(255, 250, 243, 1) 100%),
+    radial-gradient(700px 400px at 80% 15%, rgba(250, 232, 241, 0.8), rgba(247, 241, 246, 0.1) 55%),
+    linear-gradient(180deg, rgba(255, 250, 243, 1) 0%, rgba(247, 241, 246, 1) 100%);
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle editorial noise overlay (no external assets) */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    rgba(214, 178, 166, 0.55),
+    rgba(214, 178, 166, 1),
+    rgba(215, 154, 168, 0.95),
+    rgba(214, 178, 166, 0.55)
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 2.5s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes pulseGold {
+  0%,
+  100% {
+    box-shadow: 0 0 0px rgba(214, 178, 166, 0);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(214, 178, 166, 0.55);
+  }
+}
+
