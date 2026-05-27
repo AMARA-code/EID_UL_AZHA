@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Qurbani Mubarak
 
-## Getting Started
+A multi-page Eid ul Adha web app built with Next.js (App Router), TypeScript, Tailwind, Framer Motion, and Supabase.
 
-First, run the development server:
+## 1) Install dependencies
+
+```bash
+npm install
+```
+
+## 2) Supabase setup (required for Wishes page)
+
+1. Create a project in [Supabase](https://supabase.com/).
+2. In Supabase dashboard, go to **SQL Editor** and run:
+
+```sql
+create table wishes (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  message text not null,
+  language text default 'English',
+  hearts int default 0,
+  created_at timestamptz default now()
+);
+```
+
+3. Go to **Project Settings → API** and copy:
+   - Project URL
+   - anon public key
+   - service_role secret key (server-only)
+
+4. Fill your local env values in `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
+RESEND_API_KEY=YOUR_RESEND_API_KEY_OPTIONAL
+```
+
+5. Enable read policy for realtime/listing:
+
+```sql
+alter table wishes enable row level security;
+
+create policy "Public read wishes"
+on wishes
+for select
+to anon, authenticated
+using (true);
+```
+
+## 3) Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the local URL shown in your terminal.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 4) Verify Wishes page works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Open `/wishes`
+2. Submit a wish
+3. Click a lantern and react with heart
+4. Open a second browser tab to confirm live updates (Realtime)
 
-## Learn More
+## 5) Deploy (Vercel)
 
-To learn more about Next.js, take a look at the following resources:
+1. Push this project to GitHub.
+2. Import the repo in [Vercel](https://vercel.com/).
+3. Add these Environment Variables in Vercel project settings:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_SITE_URL` (your deployed app URL)
+   - `RESEND_API_KEY` (optional)
+4. Deploy.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+After first deploy, set `NEXT_PUBLIC_SITE_URL` to your final domain (for cleaner share links), then redeploy.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
