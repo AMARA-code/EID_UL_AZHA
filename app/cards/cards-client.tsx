@@ -5,20 +5,8 @@ import html2canvas from 'html2canvas'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { CardConfig } from '@/types'
 import GeometricBorder from '@/components/ui/GeometricBorder'
-
-type PaletteColors = {
-  bg: string
-  fg: string
-  accent: string
-  soft: string
-}
-
-const PALETTES: Record<CardConfig['palette'], PaletteColors> = {
-  forest: { bg: '#f7f1f6', fg: '#1a1422', accent: '#d6b2a6', soft: '#ece8fb' },
-  night: { bg: '#1f2338', fg: '#f6f1fb', accent: '#b9c2de', soft: '#343b5f' },
-  dawn: { bg: '#fff7ef', fg: '#5a4740', accent: '#dbaea2', soft: '#fbe7dc' },
-  desert: { bg: '#f6ead8', fg: '#5b4538', accent: '#cf8d67', soft: '#efd9bc' },
-}
+import EidCardPreview from '@/components/cards/EidCardPreview'
+import { PALETTES, buildCardShareUrl, resolvePreviewContent } from '@/lib/card-theme'
 
 const TEMPLATE_ITEMS: { key: CardConfig['template']; label: string }[] = [
   { key: 'geometric', label: 'Geometric' },
@@ -42,98 +30,6 @@ const DEFAULT_CONFIG: CardConfig = {
   from: '',
 }
 
-function TemplateArtwork({
-  template,
-  palette,
-}: {
-  template: CardConfig['template']
-  palette: PaletteColors
-}) {
-  if (template === 'minimal') {
-    return (
-      <div className="absolute inset-0 rounded-[24px]" style={{ background: palette.bg }}>
-        <div
-          className="absolute inset-3 rounded-[18px] border"
-          style={{ borderColor: `${palette.accent}` }}
-        />
-      </div>
-    )
-  }
-
-  if (template === 'crescent') {
-    return (
-      <div className="absolute inset-0 rounded-[24px] overflow-hidden" style={{ background: palette.bg }}>
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="cresGlow" cx="75%" cy="18%" r="40%">
-              <stop offset="0%" stopColor={palette.accent} stopOpacity="0.55" />
-              <stop offset="100%" stopColor={palette.accent} stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <rect width="400" height="560" fill={palette.bg} />
-          <circle cx="310" cy="95" r="95" fill="url(#cresGlow)" />
-          <path
-            d="M278 32c-34 14-58 48-58 88 0 53 43 96 96 96 22 0 43-8 59-20-17 32-50 54-88 54-56 0-102-46-102-102 0-57 46-102 102-102 1 0 2 0 3 0-4-5-8-10-12-14z"
-            fill={palette.accent}
-            fillOpacity="0.85"
-          />
-          {Array.from({ length: 16 }).map((_, i) => (
-            <path
-              key={`s-${i}`}
-              d={`M${40 + ((i * 21) % 320)} ${50 + ((i * 33) % 180)} l4 9 9 4-9 4-4 9-4-9-9-4 9-4z`}
-              fill={palette.soft}
-              opacity="0.75"
-            />
-          ))}
-        </svg>
-      </div>
-    )
-  }
-
-  if (template === 'kabah') {
-    return (
-      <div className="absolute inset-0 rounded-[24px] overflow-hidden" style={{ background: palette.bg }}>
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="560" fill={palette.bg} />
-          {Array.from({ length: 20 }).map((_, i) => (
-            <line
-              key={`r-${i}`}
-              x1="200"
-              y1="370"
-              x2={i * 20}
-              y2="0"
-              stroke={palette.soft}
-              strokeOpacity="0.5"
-            />
-          ))}
-          <rect x="130" y="290" width="140" height="140" rx="6" fill={palette.fg} fillOpacity="0.78" />
-          <rect x="130" y="320" width="140" height="12" fill={palette.accent} fillOpacity="0.95" />
-          <rect x="236" y="342" width="20" height="40" fill={palette.accent} fillOpacity="0.85" />
-        </svg>
-      </div>
-    )
-  }
-
-  return (
-    <div className="absolute inset-0 rounded-[24px] overflow-hidden" style={{ background: palette.bg }}>
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="eightStar" width="52" height="52" patternUnits="userSpaceOnUse">
-            <path
-              d="M26 6 L31 20 L46 26 L31 32 L26 46 L21 32 L6 26 L21 20 Z"
-              fill="none"
-              stroke={palette.accent}
-              strokeOpacity="0.55"
-              strokeWidth="1.2"
-            />
-          </pattern>
-        </defs>
-        <rect width="400" height="560" fill="url(#eightStar)" />
-      </svg>
-    </div>
-  )
-}
-
 function TemplateThumb({
   template,
   active,
@@ -155,8 +51,12 @@ function TemplateThumb({
       <div className="relative h-16 w-12 rounded-lg bg-cream/80">
         <div className="absolute inset-1 rounded-md border border-rosegold/35" />
         {template === 'crescent' ? <div className="absolute right-2 top-2 text-[10px]">☪</div> : null}
-        {template === 'geometric' ? <div className="absolute inset-2 border border-dashed border-rosegold/35" /> : null}
-        {template === 'kabah' ? <div className="absolute bottom-2 left-1/2 h-4 w-5 -translate-x-1/2 bg-ink/65" /> : null}
+        {template === 'geometric' ? (
+          <div className="absolute inset-2 border border-dashed border-rosegold/35" />
+        ) : null}
+        {template === 'kabah' ? (
+          <div className="absolute bottom-2 left-1/2 h-4 w-5 -translate-x-1/2 bg-ink/65" />
+        ) : null}
       </div>
     </button>
   )
@@ -169,12 +69,10 @@ export default function CardsClient() {
   const [showShareOptions, setShowShareOptions] = useState(false)
   const previewRef = useRef<HTMLDivElement | null>(null)
 
-  const palette = PALETTES[config.palette]
+  const previewContent = useMemo(() => resolvePreviewContent(config), [config])
 
-  function getShareUrl() {
-    const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-    if (envUrl) return envUrl
-    return window.location.href
+  function cardShareUrl() {
+    return buildCardShareUrl(config, window.location.origin)
   }
 
   async function onDownload() {
@@ -197,12 +95,13 @@ export default function CardsClient() {
   }
 
   async function copyShareText() {
-    const text = `${previewContent.message} — ${previewContent.from}\n${getShareUrl()}`
+    const url = cardShareUrl()
+    const text = `${previewContent.message}\nEid Mubarak from ${previewContent.from}\n${url}`
     try {
       await navigator.clipboard.writeText(text)
-      setShareMsg('Caption + link copied. Paste it into the app.')
+      setShareMsg('Card link copied. Paste it into the app.')
     } catch {
-      setShareMsg('Could not copy caption automatically.')
+      setShareMsg('Could not copy link automatically.')
     }
   }
 
@@ -212,17 +111,14 @@ export default function CardsClient() {
 
   function shareToWhatsApp() {
     const text = encodeURIComponent(
-      `${previewContent.message}\nEid Mubarak from ${previewContent.from}\n${getShareUrl()}`,
+      `${previewContent.message}\nEid Mubarak from ${previewContent.from}\n${cardShareUrl()}`,
     )
     openShareWindow(`https://wa.me/?text=${text}`)
   }
 
   function shareToFacebook() {
-    const url = encodeURIComponent(getShareUrl())
-    const quote = encodeURIComponent(
-      `${previewContent.message} — ${previewContent.from}`,
-    )
-    openShareWindow(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${quote}`)
+    const url = encodeURIComponent(cardShareUrl())
+    openShareWindow(`https://www.facebook.com/sharer/sharer.php?u=${url}`)
   }
 
   async function shareToInstagram() {
@@ -234,16 +130,6 @@ export default function CardsClient() {
     await copyShareText()
     openShareWindow('https://www.tiktok.com/upload')
   }
-
-  const previewContent = useMemo(
-    () => ({
-      to: config.to || 'Beloved Family',
-      message:
-        config.message || 'May your home be filled with mercy, peace, and joy this Eid.',
-      from: config.from || 'Qurbani Mubarak',
-    }),
-    [config],
-  )
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
@@ -349,35 +235,8 @@ export default function CardsClient() {
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 className="mx-auto"
               >
-                <div
-                  ref={previewRef}
-                  className="relative overflow-hidden rounded-[24px] border shadow-[0_28px_80px_rgba(26,20,34,0.18)]"
-                  style={{
-                    width: 400,
-                    height: 560,
-                    borderColor: `${palette.accent}`,
-                    color: palette.fg,
-                  }}
-                >
-                  <TemplateArtwork template={config.template} palette={palette} />
-                  <div className="absolute inset-0 p-8">
-                    <div
-                      className="absolute inset-3 rounded-[20px] border"
-                      style={{ borderColor: `${palette.accent}` }}
-                    />
-                    <div className="relative flex h-full flex-col justify-between text-center">
-                      <div>
-                        <p className="font-arabic text-[30px]" style={{ color: palette.accent }}>
-                          عيد الأضحى مبارك
-                        </p>
-                        <p className="mt-3 font-cinzel text-lg tracking-wide">To: {previewContent.to}</p>
-                      </div>
-                      <p className="mx-auto max-w-[290px] font-crimson text-[18px] leading-relaxed">
-                        {previewContent.message}
-                      </p>
-                      <p className="font-cinzel text-lg">From: {previewContent.from}</p>
-                    </div>
-                  </div>
+                <div ref={previewRef}>
+                  <EidCardPreview config={config} />
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -446,4 +305,3 @@ export default function CardsClient() {
     </div>
   )
 }
-
