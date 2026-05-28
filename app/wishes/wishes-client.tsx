@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase'
 type Language = Wish['language']
 
 const LANGS: { value: Language; label: string; flag: string }[] = [
-  { value: 'English', label: 'English',  flag: '🇬🇧' },
+  { value: 'English', label: 'English',  flag: '🇵🇰' },
   { value: 'Urdu',    label: 'اردو',     flag: '🇵🇰' },
   { value: 'Arabic',  label: 'العربية',  flag: '🇸🇦' },
 ]

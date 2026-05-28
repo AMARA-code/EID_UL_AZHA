@@ -4,7 +4,7 @@ import type { Wish } from '@/types'
 import { motion } from 'framer-motion'
 
 const FLAG: Record<Wish['language'], string> = {
-  English: '🇬🇧',
+  English: '🇵🇰',
   Urdu: '🇵🇰',
   Arabic: '🇸🇦',
 }
