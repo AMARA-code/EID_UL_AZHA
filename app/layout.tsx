@@ -23,9 +23,42 @@ const arabic = Noto_Naskh_Arabic({
   weight: ['400', '500', '600', '700'],
 })
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eid-ul-azha-bice.vercel.app'
+const SITE_TITLE = 'Qurbani Mubarak — عيد الأضحى مبارك'
+const SITE_DESCRIPTION =
+  'Light a lantern, float a wish, and send a beautiful Eid ul Adha card to your loved ones. 🏮'
+
 export const metadata: Metadata = {
-  title: 'Qurbani Mubarak',
-  description: 'A luminous Eid ul Adha celebration — wishes and card creation.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    template: '%s | Qurbani Mubarak',
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    'Eid ul Adha', 'Qurbani Mubarak', 'Eid wishes', 'Eid card', 'Eid 2026',
+    'عيد الأضحى', 'قرباني مبارک', 'Eid greetings', 'Islamic celebration',
+  ],
+
+  openGraph: {
+    type: 'website',
+    url: SITE_URL,
+    siteName: 'Qurbani Mubarak',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: 'en_PK',
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
