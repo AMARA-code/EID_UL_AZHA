@@ -24,7 +24,7 @@ const arabic = Noto_Naskh_Arabic({
 })
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eid-ul-azha-bice.vercel.app'
-const SITE_TITLE = 'Qurbani Mubarak — عيد الأضحى مبارك'
+const SITE_TITLE = 'Qurbani Mubarak — Send Eid ul Adha Cards & Wishes 🏮'
 const SITE_DESCRIPTION =
 'Light a lantern, float a wish, and send a beautiful Eid ul Adha card to your loved ones. Celebrate Qurbani with heartfelt greetings. 🏮'
 

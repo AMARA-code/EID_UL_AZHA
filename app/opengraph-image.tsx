@@ -172,7 +172,7 @@ export default function Image() {
               textShadow: '0 0 40px rgba(214,178,166,0.5)',
             }}
           >
-            عيد الأضحى مبارك
+           EID UL ADHA MUBARAK
           </div>
 
           {/* Divider with star */}
